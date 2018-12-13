@@ -1,0 +1,23 @@
+﻿#pragma kernel MovePoints
+
+float elapsedTime;
+uint vertexCount;
+
+struct CustomVertex {
+	float3 position;
+	float4 color;
+};
+
+StructuredBuffer<CustomVertex> vertexBufferRead;
+RWStructuredBuffer<CustomVertex> vertexBufferWrite;
+
+[numthreads(32, 1, 1)]
+void MovePoints(uint3 id : SV_DispatchThreadID)
+{
+	if (id.x >= vertexCount) return;
+
+	float sinTime = sin(elapsedTime);
+	float cosTime = cos(elapsedTime);
+	vertexBufferWrite[id.x].position = vertexBufferRead[id.x].position + float3(sin(elapsedTime), cos(elapsedTime), 0);
+	vertexBufferWrite[id.x].color = float4(0, (sinTime * 0.5) + 0.5, (cosTime * 0.5) + 0.5, 1);
+}
